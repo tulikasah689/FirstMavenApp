@@ -1,0 +1,35 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:11
+    steps:
+      - checkout
+      - run:
+          name: Install Maven dependencies
+          command: mvn install
+      - run:
+          name: Build project
+          command: mvn package
+      - run:
+          name: Run tests
+          command: mvn test
+
+  deploy:
+    docker:
+      - image: circleci/openjdk:11
+    steps:
+      - checkout
+      - run:
+          name: Deploy artifact
+          command: mvn deploy -DskipTests
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
